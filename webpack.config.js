@@ -2,17 +2,23 @@ const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
-  entry: [
-    './src/index'
-  ],
-  module: {
+    entry: [
+      './public/src/index.js'
+    ],
+    output: {
+        path: __dirname + '/public/',
+        publicPath: '/',
+        filename: 'bundle.js'
+    },
+    devtool: "eval",
+    module: {
     loaders: [
       {
           test: /\.(js|jsx)$/,
           exclude: /node_modules/,
           loader: 'babel-loader',
           options: {
-              presets: ['es2015', 'react' ],
+              presets: ["stage-0", 'es2015', 'react' ],
               cacheDirectory: true
           },
           exclude: /node_modules/
@@ -20,23 +26,24 @@ module.exports = {
       { test: /\.s?css$/, loader: 'style-loader!css-loader!sass-loader' },
 
     ]
-  },
-  resolve: {
+    },
+    resolve: {
     extensions: ['.js','.scss']
-  },
-  output: {
-    path: path.join(__dirname, '/dist'),
-    publicPath: '/',
-    filename: 'bundle.js'
-  },
-  devtool: 'cheap-eval-source-map',
-  devServer: {
-    contentBase: './dist',
-    hot: true
-  },
-  plugins: [
+    },
+
+    devServer: {
+        historyApiFallback: true,
+        contentBase: './public'
+    },
+
+    plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
-  ]
+    new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+          warnings: false
+      }
+    })
+    ]
 };

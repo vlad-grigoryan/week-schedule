@@ -66,7 +66,7 @@ Minor Changes:
 * Updates all other dependencies to latest
 * Updates eslint rules
 * Updates npm scripts
-* Refactors server.js
+* Refactors app.js
 * Updates README
 
 **v.0.2.0**
@@ -83,7 +83,7 @@ $ git push heroku master
 $ heroku open
 ```
 
-Heroku will follow the `build` command in your `package.json` and compile assets with `webpack.prod.config.js`. It runs the Express web server in `server.js`.
+Heroku will follow the `build` command in your `package.json` and compile assets with `webpack.prod.config.js`. It runs the Express web server in `app.js`.
 
 If you're unfamiliar with Heroku deployment (or just need a refresher), they have a really great walkthrough [here](https://devcenter.heroku.com/articles/getting-started-with-nodejs#introduction).
 

@@ -1,20 +1,55 @@
-const config = require('./webpack.config.js');
-const webpack = require('webpack');
+var webpack = require('webpack');
+var CompressionPlugin = require('compression-webpack-plugin');
 
-config.plugins.push(
-  new webpack.DefinePlugin({
-    "process.env": {
-      "NODE_ENV": JSON.stringify("production")
+
+module.exports = {
+    entry: [
+        './public/src/index.js'
+    ],
+    output: {
+        path: __dirname + '/public/',
+        publicPath: '/',
+        filename: 'bundle.js'
+    },
+    devtool: "source-map",
+    module: {
+        loaders: [
+            {
+                test: /\.(js|jsx)$/,
+                exclude: /node_modules/,
+                loader: 'babel-loader',
+                options: {
+                    presets: ['es2015', 'react' ],
+                    cacheDirectory: true
+                },
+                exclude: /node_modules/
+            },
+            { test: /\.s?css$/, loader: 'style-loader!css-loader!sass-loader' },
+
+        ]
+    },
+    plugins: [
+        new webpack.DefinePlugin({ //<--key to reduce React's size
+            'process.env': {
+                'NODE_ENV': JSON.stringify('production')
+            }
+        }),
+        new webpack.optimize.UglifyJsPlugin(),
+        new webpack.optimize.AggressiveMergingPlugin(),
+        new CompressionPlugin({
+            asset: "[path].gz[query]",
+            algorithm: "gzip",
+            test: /\.js$|\.css$|\.html$/,
+            threshold: 10240,
+            minRatio: 0.8
+        })
+    ],
+
+    resolve: {
+        extensions: ['.js', '.jsx']
+    },
+    devServer: {
+        historyApiFallback: true,
+        contentBase: './public'
     }
-  })
-);
-
-config.plugins.push(
-  new webpack.optimize.UglifyJsPlugin({
-    compress: {
-      warnings: false
-    }
-  })
-);
-
-module.exports = config;
+};
