@@ -2,10 +2,10 @@ import React from 'react';
 import expect from 'expect';
 import { shallow } from 'enzyme';
 
-import App from '../src/components/App';
+import App from '../src/components/LoginContainer';
 
-describe('Component: App', () => {
-  it('should render the App component', () => {
+describe('Component: LoginContainer', () => {
+  it('should render the LoginContainer component', () => {
     const wrapper = shallow(
       <App name="World" />
     );

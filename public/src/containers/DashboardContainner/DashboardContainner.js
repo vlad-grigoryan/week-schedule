@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import App from '../components/App.js';
+import {Dashboard} from '../../components';
 
 const mapDispatchToProps = (dispatch) => {
     return {}
 };
 
-export default connect(null, mapDispatchToProps)(App);
+export default connect(null, mapDispatchToProps)(Dashboard);

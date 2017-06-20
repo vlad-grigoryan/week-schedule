@@ -19,6 +19,7 @@ module.exports = {
           loader: 'babel-loader',
           options: {
               presets: ["stage-0", 'es2015', 'react' ],
+              plugins: ["transform-class-properties"],
               cacheDirectory: true
           },
           exclude: /node_modules/

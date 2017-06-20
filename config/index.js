@@ -3,7 +3,7 @@
  * The Module Dynamically loads the configurations for
  * the heroku deployed project. This way of managing the configuration
  * is done because of the heroku suggestion for
- * Multiple Environments for the App article.
+ * Multiple Environments for the LoginContainer article.
  */
 
 const url = require('url');

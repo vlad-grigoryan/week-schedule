@@ -1,10 +1,12 @@
 import React from 'react';
-import { Route, IndexRoute } from 'react-router';
+import { HashRouter, Route, Link, Switch } from 'react-router-dom';
 
-import App from './pages/App';
-
+import {Login, Dashboard} from './pages';
 
 export default (
-    <Route path="/" component={App}>
-    </Route>
+    <Switch>
+        <Route exact={true} path="/" component={Login} />
+        <Route path="/dashboard" component={Dashboard} />
+        <Route render={() => <h1>Fuck off</h1>}/>
+    </Switch>
 );
