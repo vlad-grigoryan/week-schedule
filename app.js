@@ -5,10 +5,7 @@ const cookieParser = require('cookie-parser');
 const expressValidator = require('express-validator');
 const config = require('./config');
 const init = require('./init');
-const webpackConfig = require('./webpack.config');
-const webpack = require('webpack');
-const webpackDevMiddleware = require('webpack-dev-middleware');
-const webpackHotMiddleware = require('webpack-hot-middleware');
+
 
 init(config);
 const app = express();
@@ -20,7 +17,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressValidator());
 
 app.use(cookieParser());
-if(config.env == 'local') {
+console.log(process.env.NODE_ENV, "process.env.NODE_ENV")
+if(process.env.NODE_ENV === 'local' || !process.env.NODE_ENV) {
+
+    const webpackConfig = require('./webpack.config');
+    const webpackDevMiddleware = require('webpack-dev-middleware');
+    const webpackHotMiddleware = require('webpack-hot-middleware');
+
+    const webpack = require('webpack');
     let compiler = webpack(webpackConfig);
 
     app.use(webpackDevMiddleware(compiler, {
@@ -39,7 +43,7 @@ if(config.env == 'local') {
     }));
 }
 
-app.set('env', config.env);
+app.set('env', process.env.NODE_ENV);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

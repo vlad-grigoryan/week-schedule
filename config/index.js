@@ -10,7 +10,7 @@ const url = require('url');
 const path = require('path');
 
 /**
- * Returns the Redis config object for the staging,
+ * Returns the Redis actionType object for the staging,
  * testing and production servers
  * @returns {{port: *, host: (*|string), pass: *}}
  * @private
@@ -29,7 +29,7 @@ let __redisConfig = () => {
 };
 
 /**
- * Returns the mongo db config for the staging,
+ * Returns the mongo db actionType for the staging,
  * testing and production servers
  * @returns {*}
  * @private
@@ -40,7 +40,7 @@ let __mongoConfig = () => {
 };
 
 /**
- * Returns the Elastic Search config properties for the staging,
+ * Returns the Elastic Search actionType properties for the staging,
  * testing and production servers.
  * @returns {{host: (*|string), port: *, secure: boolean, auth: {username: *, password: *}}}
  * @private
@@ -94,7 +94,7 @@ let __mergeSharedConfigs = (shared, config) => {
 };
 
 /**
- * Creates a config object dynamically for the application.
+ * Creates a actionType object dynamically for the application.
  * @returns {*}
  * @private
  */

@@ -2,9 +2,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 
 import Routes from './routes';
-import configureStore from './store/configureStore.js';
+import reducers from './reducers';
 
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -13,8 +15,18 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 
+const logger = store => next => action => {
+    console.log('PrevState', store.getState());
+    console.log('Action', action);
+    next(action);
+    console.log('Next State', store.getState());
+};
 
-const store = configureStore();
+const store = createStore(
+    reducers,
+    // applyMiddleware(logger)
+);
+
 
 
 ReactDOM.render(

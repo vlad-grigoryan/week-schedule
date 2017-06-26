@@ -1,10 +1,19 @@
 import React from 'react';
 import { Component } from 'react';
+import { connect } from 'react-redux';
 import './styles.scss';
+import { withRouter } from 'react-router';
 
-export default class Dashboard extends Component {
+@withRouter
+class Dashboard extends Component {
     constructor(props) {
         super(props);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if(!nextProps.auth.isAuthenticated){
+            this.props.history.push('/')
+        }
     }
 
 
@@ -16,3 +25,15 @@ export default class Dashboard extends Component {
         );
     }
 }
+const mapStateToProps = (state) => {
+    return {
+        auth : {
+            isAuthenticated: state.users.isAuthenticated,
+        }
+    }
+};
+
+
+
+Dashboard = connect(mapStateToProps, null)(Dashboard);
+export default withRouter(Dashboard)

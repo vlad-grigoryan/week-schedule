@@ -4,8 +4,9 @@
   "description": "an example for deploying a React + NodeJS app to Heroku",
   "main": "bin/www",
   "scripts": {
-    "build": "webpack  --config webpack.prod.config.js ",
-    "start": "nodemon --inspect ./bin/www --ignore './public'",
+    "build": "webpack  --config webpack.config.js ",
+    "dev": "npm run build && nodemon --inspect ./bin/www --ignore './public'",
+    "start": "NODE_ENV=local node ./bin/www",
     "prod": "npm run build && NODE_ENV=production node ./bin/www",
     "test": "mocha --compilers js:babel-core/register ./test/**/*.spec.js --require ignore-styles"
   },
@@ -34,6 +35,7 @@
     "prop-types": "^15.5.8",
     "pug": "^2.0.0-rc.2",
     "react": "^15.5.4",
+    "react-async-loader": "^0.1.2",
     "react-dom": "^15.5.4",
     "react-google-login": "^2.9.2",
     "react-redux": "^5.0.5",
@@ -41,10 +43,11 @@
     "react-router-dom": "^4.1.1",
     "react-tap-event-plugin": "^2.0.1",
     "redux": "^3.6.0",
+    "redux-actions": "^2.0.3",
     "redux-promise": "^0.5.3",
     "sass-loader": "^6.0.3",
     "style-loader": "^0.16.1",
-    "webpack": "^2.3.3"
+    "webpack": "^2.6.1"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.2",
