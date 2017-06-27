@@ -42,11 +42,14 @@ export default class ErrorDisplay extends Component {
                      errorMessage: nextProps.error
                  })
          }
-         setTimeout(()=> {
-             this.setState({
-                 errorMessage: ''
-             })
-         }, 1500);
+         if(this.state.errorMessage !== '') {
+             setTimeout(()=> {
+                 this.setState({
+                     errorMessage: ''
+                 })
+             }, 1500);
+         }
+
     }
 
     render() {

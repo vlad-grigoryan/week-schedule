@@ -4,7 +4,11 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var schema = new Schema({
-    name: String,
+    googleId: Number,
+    firstName: String,
+    lastName: String,
+    email:String,
+    hd: String,
     created: {
         type: Date,
         default: Date.now
@@ -16,8 +20,10 @@ var schema = new Schema({
 });
 
 schema.statics.publicFields = [
-    'name',
-    'name',
+    'firstName',
+    'lastName',
+    'email',
+    'hd',
     'created',
     'updated'
 ];

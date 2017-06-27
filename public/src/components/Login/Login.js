@@ -4,7 +4,9 @@ import GoogleLogin from 'react-google-login';
 import {ErrorDisplay} from '../ErrorDisplay';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { userActionCreator } from '../../actions';
+import { bindActionCreators } from 'redux';
+import { SetSigninStatusAction } from '../../actions';
+import axios from 'axios';
 
 
 import './styles.scss';
@@ -18,12 +20,9 @@ class Login extends Component {
         };
 
     };
-    componentWillMount() {
-        console.log(this.props, "properties")
-    }
+
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps.auth.isAuthenticated, "Test")
         if(nextProps.auth.isAuthenticated){
             this.props.history.push('/dashboard')
         }
@@ -34,24 +33,35 @@ class Login extends Component {
 
     responseGoogle = (response) => {
 
-
-        let auth2 = gapi.auth2.getAuthInstance();
-
-
         if(response.error) {
             this.setState({
                 errorMessage: response.error
             });
-        } else if(!response.profileObj.email.endsWith('simplytechnologies.net')){
-            auth2.disconnect().then(()=> {
-                this.setState({
-                    errorMessage: 'should_simply_email'
-                });
-            })
-
-        } else {
-            this.props.history.push('/dashboard')
         }
+
+        let params = {
+            accessToken: response.accessToken
+        };
+
+        axios.post('/api/v1/user', params)
+            .then((response)=> {
+                if(response.status == 200) {
+                    this.props.history.push('/dashboard')
+                    // this.props.SetSigninStatusAction(true);
+                }
+
+                // this.props.SetSigninStatusAction(response.isAuthenticated);
+            });
+        // else if(!response.profileObj.email.endsWith('simplytechnologies.net')){
+        //     auth2.disconnect().then(()=> {
+        //         this.setState({
+        //             errorMessage: 'should_simply_email'
+        //         });
+        //     })
+        //
+        // } else {
+        //     this.props.history.push('/dashboard')
+        // }
     };
 
     render() {
@@ -80,8 +90,14 @@ const mapStateToProps = (state) => {
         }
     }
 };
+const mapDispatchToProps = (dispatch) => {
+    return {
+        SetSigninStatusAction: bindActionCreators(SetSigninStatusAction, dispatch)
+    }
 
-Login = connect(mapStateToProps, null)(Login);
+};
+
+Login = connect(mapStateToProps, mapDispatchToProps)(Login);
 
 
 export default withRouter(Login);

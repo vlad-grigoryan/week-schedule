@@ -1,6 +1,7 @@
 import  React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import axios from 'axios';
 
 import {SetSigninStatusAction} from '../../actions';
 
@@ -33,8 +34,21 @@ export function requireAuthentication(Component) {
                             client_id: '735955037545-r8ujuf1njsm3sv02t371npmmj6ieelaa.apps.googleusercontent.com',
                             scope: 'profile'
                         }).then((GoogleAuth)=>{
-                            this.props.SetSigninStatusAction(GoogleAuth.isSignedIn.get());
-                            console.log(this.props.auth, "propsssss")
+                            let userAccessToken = GoogleAuth.currentUser.get().getAuthResponse().access_token;
+
+                            if(userAccessToken) {
+                                let params = {
+                                    token: userAccessToken
+                                };
+                                axios.post('/api/v1/isAuth', params)
+                                    .then((response)=> {
+                                    console.log(response, "response!!!!!!!!!!!!!!")
+                                        this.props.SetSigninStatusAction(response.data.isAuthenticated);
+                                    })
+                            } else {
+                                this.props.SetSigninStatusAction(false);
+                            }
+
                         })
 
                 });

@@ -11,6 +11,8 @@ class Dashboard extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log(nextProps, "nextProps")
+        console.log(this.props, "props")
         if(!nextProps.auth.isAuthenticated){
             this.props.history.push('/')
         }
@@ -31,6 +33,7 @@ const mapStateToProps = (state) => {
             isAuthenticated: state.users.isAuthenticated,
         }
     }
+
 };
 
 
