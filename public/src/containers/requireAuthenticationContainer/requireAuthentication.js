@@ -5,6 +5,7 @@ import axios from 'axios';
 
 import {SetSigninStatusAction} from '../../actions';
 
+import config from '../../../../config/authConfig';
 
 export function requireAuthentication(Component) {
     class AuthenticatedComponent extends React.Component {
@@ -31,7 +32,7 @@ export function requireAuthentication(Component) {
 
                     gapi.load('auth2', () => {
                         return  gapi.auth2.init({
-                            client_id: '735955037545-r8ujuf1njsm3sv02t371npmmj6ieelaa.apps.googleusercontent.com',
+                            client_id: config.gapiClientId,
                             scope: 'profile'
                         }).then((GoogleAuth)=>{
                             let userAccessToken = GoogleAuth.currentUser.get().getAuthResponse().access_token;
@@ -42,7 +43,6 @@ export function requireAuthentication(Component) {
                                 };
                                 axios.post('/api/v1/isAuth', params)
                                     .then((response)=> {
-                                    console.log(response, "response!!!!!!!!!!!!!!")
                                         this.props.SetSigninStatusAction(response.data.isAuthenticated);
                                     })
                             } else {

@@ -10,12 +10,12 @@ var google = require('googleapis');
 var googleAuth = require('google-auth-library');
 var auth = new googleAuth();
 
+const config = require('../../../config/authConfig');
+
+console.log(config, "config")
 var oauth2Client = new auth.OAuth2(
-    '735955037545-r8ujuf1njsm3sv02t371npmmj6ieelaa.apps.googleusercontent.com', '', ''
+    config.gapiClientId, '', ''
 );
-
-
-
 
 exports.checkUserAuth = function (token) {
     var deferred = Q.defer();
@@ -29,10 +29,8 @@ exports.checkUserAuth = function (token) {
         if(error) {
             deferred.reject(new Error(error));
         }
-        var start = profile.email.indexOf("@");
-        var emailVarifaction = profile.email.substring(start+1, profile.email.length);
 
-        if(emailVarifaction !== 'simplytechnologies.net') {
+        if(!profile.hd && profile.hd !== config.requireMail) {
             deferred.resolve(false);
         }
 
@@ -65,13 +63,12 @@ exports.createUser = function (token) {
             deferred.reject(new Error(error));
         }
 
-        if(!profile.hd && profile.hd !== 'simplytechnologies.net') {
-            deferred.resolve({status: 400, errorMessage: 'should_simply_email'});
-        }
-
-        User.findOne({
-            email: profile.email
-        })
+        if(!profile.hd && profile.hd !== config.requireMail) {
+            deferred.resolve({error: 'should_simply_email'});
+        } else {
+            User.findOne({
+                email: profile.email
+            })
             .then(function (userData) {
                 if(!userData) {
                     var user =  new User({
@@ -85,6 +82,8 @@ exports.createUser = function (token) {
                 }
                 deferred.resolve(user);
             });
+        }
+
     });
 
     return deferred.promise;

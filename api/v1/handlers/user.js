@@ -35,8 +35,10 @@ userHandler.prototype.createUser = function(req, res, next) {
 
     userService.createUser(req.body.accessToken)
         .then(function(data) {
-            console.log(data, "data")
-            res.status(200).send(data);
+            if(data.error) {
+                return res.status(400).send({error: 'VALIDATION', details: data.error})
+            }
+            return res.status(200).send(data);
         })
         .catch(next);
 };

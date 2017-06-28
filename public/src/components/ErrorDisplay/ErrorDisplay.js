@@ -7,7 +7,7 @@ export default class ErrorDisplay extends Component {
         super(props);
 
         this.state = {
-            errorMessage: ""
+            errorMessage: null
         }
     }
     componentWillReceiveProps(nextProps) {
@@ -39,15 +39,8 @@ export default class ErrorDisplay extends Component {
                  break;
              default:
                  this.setState({
-                     errorMessage: nextProps.error
-                 })
-         }
-         if(this.state.errorMessage !== '') {
-             setTimeout(()=> {
-                 this.setState({
-                     errorMessage: ''
-                 })
-             }, 1500);
+                     errorMessage : "There is some error please contact with us."
+                 });
          }
 
     }

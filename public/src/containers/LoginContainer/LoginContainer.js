@@ -1,9 +1,85 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import {Login} from '../../components';
+import { bindActionCreators } from 'redux';
+import { SetSigninStatusAction } from '../../actions';
+import {Login, Loading} from '../../components';
+import axios from 'axios';
 
-const mapDispatchToProps = (dispatch) => {
-    return {}
+
+class LoginContainer extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            errorMessage: "",
+            isLoggedIn: false
+        };
+
+    };
+
+    componentWillReceiveProps(nextProps) {
+        if(!this.props.auth.isAuthenticated && !nextProps.auth.isAuthenticated) {
+            this.setState({
+                isLoggedIn: true
+            });
+        }
+
+        if(nextProps.auth.isAuthenticated){
+            this.props.history.push('/dashboard')
+        }
+    }
+
+    responseGoogle = (response) => {
+        if(response.error) {
+            this.setState({
+                errorMessage: response.error
+            });
+        }
+
+        let params = {
+            accessToken: response.accessToken
+        };
+
+        console.log("Teeeeeeeeest")
+        axios.post('/api/v1/user', params)
+            .then((response)=> {
+                this.props.history.push('/dashboard');
+            })
+            .catch((error) =>{
+                if (error.response) {
+                    this.setState({
+                        errorMessage: error.response.data.details
+                    })
+                }
+            });
+
+    };
+    render() {
+        return (
+            <div>
+                {this.state.isLoggedIn ?
+                    (<Login onGoogleResponse={this.responseGoogle} errorMessage={this.state.errorMessage}/>)
+                    :(<Loading />)}
+            </div>
+        );
+    }
+}
+const mapStateToProps = (state) => {
+    return {
+        auth : {
+            isAuthenticated: state.users.isAuthenticated,
+        }
+    }
 };
 
-export default connect(null, mapDispatchToProps)(Login);
+const mapDispatchToProps = (dispatch) => {
+    return {
+        SetSigninStatusAction: bindActionCreators(SetSigninStatusAction, dispatch)
+    }
+};
+
+LoginContainer = connect(mapStateToProps, mapDispatchToProps)(LoginContainer);
+
+
+export default withRouter(LoginContainer);
