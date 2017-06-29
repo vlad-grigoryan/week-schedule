@@ -6,7 +6,6 @@ import './styles.scss';
 
 
 const Login = (props) => {
-    console.log(props, "props")
     return (
         <div className="top-container">
             <h1>Welcome to the login page</h1>

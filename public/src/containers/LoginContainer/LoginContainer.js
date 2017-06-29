@@ -41,13 +41,13 @@ class LoginContainer extends Component {
             accessToken: response.accessToken
         };
 
-        console.log("Teeeeeeeeest")
         axios.post('/api/v1/user', params)
             .then((response)=> {
                 this.props.history.push('/dashboard');
             })
             .catch((error) =>{
                 if (error.response) {
+                    gapi.auth2.getAuthInstance().disconnect();
                     this.setState({
                         errorMessage: error.response.data.details
                     })

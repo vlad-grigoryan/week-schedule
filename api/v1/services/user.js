@@ -67,11 +67,11 @@ exports.createUser = function (token) {
             deferred.resolve({error: 'should_simply_email'});
         } else {
             User.findOne({
-                email: profile.email
+                hd: profile.hd
             })
-            .then(function (userData) {
-                if(!userData) {
-                    var user =  new User({
+            .then(function (user) {
+                if(!user) {
+                    user =  new User({
                         googleId: profile.id,
                         firstName: profile.given_name,
                         lastName: profile.family_name,
