@@ -9,6 +9,7 @@ var schema = new Schema({
     lastName: String,
     email:String,
     hd: String,
+    workingDays: Array,
     created: {
         type: Date,
         default: Date.now
@@ -24,6 +25,7 @@ schema.statics.publicFields = [
     'lastName',
     'email',
     'hd',
+    'workingDays',
     'created',
     'updated'
 ];

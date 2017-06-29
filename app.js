@@ -50,16 +50,15 @@ app.set('env', process.env.NODE_ENV);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
+debug('Initializing express: /api/v1 server');
+var apiServerV1 = require('./api/v1');
+app.use('/api/v1', apiServerV1);
 
 app.use(express.static(path.join(__dirname, 'public')));
 const routes = require('./routes');
 app.use(routes);
 
 
-
-debug('Initializing express: /api/v1 server');
-var apiServerV1 = require('./api/v1');
-app.use('/api/v1', apiServerV1);
 
 /// catch 404 and forward to error handler
 app.use(function (req, res, next) {

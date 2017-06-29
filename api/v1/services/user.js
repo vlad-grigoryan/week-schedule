@@ -12,7 +12,6 @@ var auth = new googleAuth();
 
 const config = require('../../../config/authConfig');
 
-console.log(config, "config")
 var oauth2Client = new auth.OAuth2(
     config.gapiClientId, '', ''
 );
@@ -30,7 +29,7 @@ exports.checkUserAuth = function (token) {
             deferred.reject(new Error(error));
         }
 
-        if(!profile.hd && profile.hd !== config.requireMail) {
+        if(profile && profile.hd !== config.requireMail) {
             deferred.resolve(false);
         }
 
@@ -63,11 +62,11 @@ exports.createUser = function (token) {
             deferred.reject(new Error(error));
         }
 
-        if(!profile.hd && profile.hd !== config.requireMail) {
+        if(profile && profile.hd !== config.requireMail) {
             deferred.resolve({error: 'should_simply_email'});
         } else {
             User.findOne({
-                hd: profile.hd
+                email: profile.email
             })
             .then(function (user) {
                 if(!user) {
@@ -88,4 +87,31 @@ exports.createUser = function (token) {
 
     return deferred.promise;
 
+};
+
+exports.getUser = function (token) {
+    var deferred = Q.defer();
+
+    oauth2Client.setCredentials({
+        access_token: token,
+    });
+
+    google.oauth2("v2").userinfo.v2.me.get({auth: oauth2Client}, function (error, profile) {
+        if(error) {
+            deferred.reject(new Error(error));
+        }
+        if(profile) {
+            return User.findOne({
+                email: profile.email
+            })
+            .then(function (user) {
+                deferred.resolve(user);
+            })
+            .catch(function (err) {
+                deferred.reject(err);
+            });
+        }
+    });
+
+    return deferred.promise;
 };
