@@ -1,7 +1,14 @@
 import React from 'react';
 import './styles.scss';
-import Moment from 'moment';
 import TimePicker from 'material-ui/TimePicker';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
+
+const muiTheme = getMuiTheme({
+    timePicker: {
+        width: '2000px',
+    },
+});
 
 const Dashboard = (props) => {
     return (
@@ -11,7 +18,6 @@ const Dashboard = (props) => {
             <div className="outer">
             {
                 props.workingTime.map((time, id) => {
-                    console.log(Moment(time).format("hh:mm:ss"), "!!")
                     return(
                         <div key={id} className="time-container">
                             <div className="inner">
@@ -21,7 +27,8 @@ const Dashboard = (props) => {
                                     onChange={(event, time)=> props.onTimeChange(event, time, id)}
                                     value={time}
                                     hintText="Time to be completed by"
-                                    className="time-block"/>
+                                    className="time-block"
+                                />
                             </div>
                         </div>
                     )

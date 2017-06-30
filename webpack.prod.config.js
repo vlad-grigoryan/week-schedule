@@ -11,7 +11,7 @@ module.exports = {
         publicPath: '/',
         filename: 'bundle.js'
     },
-    devtool: "source-map",
+    devtool: "eval",
     module: {
         loaders: [
             {
@@ -19,34 +19,41 @@ module.exports = {
                 exclude: /node_modules/,
                 loader: 'babel-loader',
                 options: {
-                    presets: ['es2015', 'react' ],
+                    presets: ["stage-0", 'es2015', 'react' ],
+                    plugins: ["transform-class-properties"],
                     cacheDirectory: true
                 },
-                exclude: /node_modules/
             },
-            { test: /\.s?css$/, loader: 'style-loader!css-loader!sass-loader' },
+            {
+                test: /\.s?css$/,
+                loader: 'style-loader!css-loader!sass-loader'
+            },
+            {
+                test: /\.json$/,
+                use: 'json-loader'
+            }
 
         ]
     },
     plugins: [
-        new webpack.DefinePlugin({ //<--key to reduce React's size
-            'process.env': {
-                'NODE_ENV': JSON.stringify('production')
-            }
+        new webpack.optimize.CommonsChunkPlugin({
+            names: ['vendor'],
+            minChunks: Infinity,
+            filename: 'vendor.bundle.js'
+
         }),
-        new webpack.optimize.UglifyJsPlugin(),
-        new webpack.optimize.AggressiveMergingPlugin(),
-        new CompressionPlugin({
-            asset: "[path].gz[query]",
-            algorithm: "gzip",
-            test: /\.js$|\.css$|\.html$/,
-            threshold: 10240,
-            minRatio: 0.8
+        new webpack.optimize.OccurrenceOrderPlugin(),
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NoEmitOnErrorsPlugin(),
+        new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false
+            }
         })
     ],
 
     resolve: {
-        extensions: ['.js', '.jsx']
+        extensions: ['.js', '.jsx', '.scss']
     },
     devServer: {
         historyApiFallback: true,

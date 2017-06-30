@@ -2,18 +2,41 @@
   text-align: center;
   min-height: 50%;
   position: relative;
+  font-family: SANS-SERIF;
+  .day-block {
+    font-weight: bold;
+  }
 }
 .time-container{
   padding: 20px;
   float: left;
+  .time-block {
+    width: 50px !important;
+    text-align: center;
+    input {
+      text-align: center;
+    }
+  }
+
 }
 .outer{
   margin: 0 auto;
-  width: 630px;
+  display: table;
 }
-.time-block{
-  width: 50px !important;
-  text-align: center;
-}
+
 .inner{
+  display: inline-block;
+}
+
+@media only screen and (max-device-width: 480px) {
+  .time-container{
+    padding: 0;
+    float: none;
+    .time-block {
+      text-align: center;
+      width: 100% !important;
+
+    }
+  }
+
 }

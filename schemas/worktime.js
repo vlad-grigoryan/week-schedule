@@ -4,11 +4,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var schema = new Schema({
-    googleId: String,
-    firstName: String,
-    lastName: String,
-    email:String,
-    hd: String,
+    userId : Schema.Types.ObjectId,
+    startTime: Date,
     created: {
         type: Date,
         default: Date.now
@@ -20,11 +17,8 @@ var schema = new Schema({
 });
 
 schema.statics.publicFields = [
-    'firstName',
-    'lastName',
-    'email',
-    'hd',
-    'workingDays',
+    'userId',
+    'startDate',
     'created',
     'updated'
 ];
@@ -33,4 +27,4 @@ schema.pre('save', function (next) {
     next();
 });
 
-mongoose.model('User', schema);
+mongoose.model('WorkTime', schema);
