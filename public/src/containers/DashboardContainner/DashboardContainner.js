@@ -36,7 +36,7 @@ class DashboardContaoner extends Component {
             }
         };
 
-        axios.get('/api/v1/worktime', header)
+        axios.get('/api/v1/myworktime', header)
             .then((response) => {
                 const workTimes = response.data;
                 let lateTimes= [];
@@ -45,7 +45,7 @@ class DashboardContaoner extends Component {
                 now.setMinutes(0);
                 now.setSeconds(0);
 
-                while( lateTimes.length != 7) {
+                while( lateTimes.length != 5) {
                     let continueWhile = false;
 
                     for( let i = 0; i < workTimes.length;  i++) {
@@ -106,7 +106,6 @@ class DashboardContaoner extends Component {
 
         axios.post('/api/v1/worktime', params)
             .then((response)=> {
-                console.log(response, "response");
             })
             .catch((error) =>{
                 console.log(error)

@@ -47,6 +47,20 @@ workTimeHandler.prototype.getWorkingTime = function(req, res, next) {
         })
 };
 
+workTimeHandler.prototype.getWorkSchedule = function(req, res, next) {
+    const accessToken = req.headers['access-token'];
+    if (!accessToken) {
+        return res.status(400).send({error: 'VALIDATION', details: errors})
+    }
+
+    workTimeService.getWorkSchedule(accessToken)
+        .then(function (data) {
+            if(data.error) {
+                return res.status(400).send({error: 'VALIDATION', details: data.error})
+            }
+            return res.status(200).send(data);
+        })
+};
 
 
 module.exports = workTimeHandler;

@@ -11,9 +11,6 @@ export function requireAuthentication(Component) {
     class AuthenticatedComponent extends React.Component {
         constructor(props) {
             super(props);
-            this.state = {
-                isAuthenticated: false
-            }
 
         }
         getAuthStatus = (isAuth) => {

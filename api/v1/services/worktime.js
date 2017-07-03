@@ -38,7 +38,8 @@ exports.setWorkingTime = function (token, startTime) {
             userId = data._id;
 
             return WorkTime.findOne({
-                startTime: {$gte: dayStart, $lt: dayEnd}
+                startTime: {$gte: dayStart, $lt: dayEnd },
+                userId: userId
             })
         })
         .then(function (worktime) {
@@ -73,7 +74,6 @@ exports.getWorkingTime = function (token) {
             googleId: profile.id
         })
         .then(function (user) {
-            console.log(user, "user")
             return WorkTime.find({
                 userId: user._id
             })
@@ -84,6 +84,21 @@ exports.getWorkingTime = function (token) {
         .catch(function (err) {
             deferred.reject(err)
         });
-    })
+    });
     return deferred.promise;
+};
+
+exports.getWorkSchedule = function () {
+    var weekSchedule = [];
+
+    return User.aggregate([
+        {
+            '$lookup': {
+                from: "worktimes",
+                localField: "_id",
+                foreignField: "userId",
+                as: "workSchedule"
+            }
+        }
+    ])
 };
