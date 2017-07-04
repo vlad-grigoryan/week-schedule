@@ -19,7 +19,7 @@ app.use(expressValidator());
 
 app.use(cookieParser());
 console.log(process.env.NODE_ENV, "process.env.NODE_ENV")
-if(process.env.NODE_ENV === 'local' || !process.env.NODE_ENV) {
+if(process.env.NODE_ENV !== 'production') {
 
     const webpackConfig = require('./webpack.config');
     const webpackDevMiddleware = require('webpack-dev-middleware');
