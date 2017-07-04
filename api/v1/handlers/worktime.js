@@ -25,10 +25,6 @@ workTimeHandler.prototype.setWorkingTime = function(req, res, next) {
     const changedTime = req.body.changedTime;
 
     workTimeService.setWorkingTime(userAccessToken, changedTime)
-        .then(function (data) {
-            console.log(data, "data")
-        })
-
 
 };
 

@@ -27,6 +27,7 @@ const Dashboard = (props) => {
                                     onChange={(event, time)=> props.onTimeChange(event, time, id)}
                                     value={time}
                                     hintText="Time to be completed by"
+                                    minutesStep={5}
                                     className="time-block"
                                 />
                             </div>

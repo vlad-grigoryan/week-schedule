@@ -15,25 +15,43 @@ import {
 
 const List = (props) => {
 
-    const getTimeForLate = (day, latArray) => {
+    const getTimeForLate = (lateArray, index) => {
+        let day = new Date();
+        day = new Date(day.setDate(day.getDate() + index));
+        while(day.getDay() == 0 || day.getDay() == 6) {
+            day = new Date(day.setDate(day.getDate() + 1));
+        }
 
-        return moment(day).format('HH:mm')
+        day.setHours(10);
+        day.setMinutes(0);
+        day.setSeconds(0);
+
+        for (let i = 0 ; i < lateArray.length; i++) {
+            if(moment(day).format('YYYY-MM-DD') === moment(lateArray[i].startTime).format('YYYY-MM-DD')) {
+                return moment(lateArray[i].startTime).format('HH:mm')
+            }
+        }
+
+
+        day = new Date(day.setDate(day.getDate() + 1));
+
+        return '-'
     };
 
 
     return (
         <div className="list-container">
-            <h1>List of late time</h1>
-                <Table>
+            <h1>Late for work</h1>
+                <Table className="table-container">
                     <TableHeader
                         adjustForCheckbox={false}
                         displaySelectAll={false}>
                         <TableRow>
-                            <TableHeaderColumn>Name</TableHeaderColumn>
+                            <TableHeaderColumn className="table-row">Name</TableHeaderColumn>
                             {
                                 props.headerTime.map(function (date, index) {
                                     return (
-                                        <TableHeaderColumn key={index}>{moment(date).format('DD MMM')}</TableHeaderColumn>
+                                        <TableHeaderColumn className="table-row" key={index}>{moment(date).format('DD MMM')}</TableHeaderColumn>
                                     )
                                 })
                             }
@@ -43,14 +61,13 @@ const List = (props) => {
                         displayRowCheckbox={false}>
                         {
                             props.weekSchedule.map(function (userSchedule, index) {
-                                console.log(userSchedule, "userSchedule")
                                 return (
                                     <TableRow key={index}>
-                                        <TableRowColumn>{userSchedule.firstName} {userSchedule.lastName}</TableRowColumn>
+                                        <TableRowColumn className="table-row">{userSchedule.firstName} {userSchedule.lastName}</TableRowColumn>
                                         {
                                             props.headerTime.map(function (date, index) {
                                                 return (
-                                                    <TableRowColumn key={index}>{getTimeForLate(date.startTime, userSchedule.workSchedule)}</TableRowColumn>
+                                                    <TableRowColumn className="table-row" key={index}>{getTimeForLate(userSchedule.workSchedule, index)}</TableRowColumn>
                                                 )
                                             })
                                         }
