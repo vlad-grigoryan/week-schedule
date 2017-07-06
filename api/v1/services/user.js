@@ -1,117 +1,65 @@
 'use strict';
 
-var mongoose = require('mongoose');
-var Q = require('q');
-
-var User = mongoose.model('User');
-
-
-var google = require('googleapis');
-var googleAuth = require('google-auth-library');
-var auth = new googleAuth();
+const mongoose = require('mongoose');
+const Q = require('q');
+const User = mongoose.model('User');
 
 const config = require('../../../config/authConfig');
+const googleService = require('./googleApi');
 
-var oauth2Client = new auth.OAuth2(
-    config.gapiClientId, '', ''
-);
 
-exports.checkUserAuth = function (token) {
-    var deferred = Q.defer();
 
-    oauth2Client.setCredentials({
-        access_token: token,
-    });
 
-    google.oauth2("v2").userinfo.v2.me.get({auth: oauth2Client}, function (error, profile) {
+exports.checkUserAuth = function (accessToken) {
 
-        if(error) {
-            deferred.reject(new Error(error));
-        }
-
-        if(profile && profile.hd !== config.requireMail) {
-            deferred.resolve(false);
-        }
-
-        User.findOne({
-            email: profile.email
+    return googleService.getUserData(accessToken)
+        .then(function (userData) {
+            if(userData && userData.hd !== config.requireMail) {
+               return false;
+            }
+            return User.findOne({email: userData.email})
         })
         .then(function (user) {
             if(!user) {
-                deferred.resolve(false);
+                return false
             }
-            deferred.resolve(true);
-        });
-    });
-
-    return deferred.promise;
-
+            return true
+        })
 };
 
 
-exports.createUser = function (token) {
-    var deferred = Q.defer();
+exports.createUser = function (accessToken) {
+    var userData = null;
 
-    oauth2Client.setCredentials({
-        access_token: token,
-    });
-
-    google.oauth2("v2").userinfo.v2.me.get({auth: oauth2Client}, function (error, profile) {
-
-        if(error) {
-            deferred.reject(new Error(error));
-        }
-
-        if(profile && profile.hd !== config.requireMail) {
-            deferred.resolve({error: 'should_simply_email'});
-        } else {
-            User.findOne({
-                email: profile.email
-            })
-            .then(function (user) {
-                if(!user) {
-                    user =  new User({
-                        googleId: profile.id,
-                        firstName: profile.given_name,
-                        lastName: profile.family_name,
-                        email: profile.email,
-                        hd: profile.hd,
-                    });
-                    user.save();
-                }
-                deferred.resolve(user);
-            });
-        }
-
-    });
-
-    return deferred.promise;
-
+    return googleService.getUserData(accessToken)
+        .then(function (user) {
+            userData = user;
+            if(user && user.hd !== config.requireMail) {
+                return {error: 'should_simply_email'}
+            }
+            return User.findOne({email: user.email})
+        })
+        .then(function (user) {
+            if(!user) {
+                user =  new User({
+                    googleId: userData.id,
+                    firstName: userData.given_name,
+                    lastName: userData.family_name,
+                    email: userData.email,
+                    picture: userData.picture,
+                    hd: userData.hd,
+                });
+                return user.save();
+            }
+        })
 };
 
-exports.getUser = function (token) {
-    var deferred = Q.defer();
-
-    oauth2Client.setCredentials({
-        access_token: token,
-    });
-
-    google.oauth2("v2").userinfo.v2.me.get({auth: oauth2Client}, function (error, profile) {
-        if(error) {
-            deferred.reject(new Error(error));
-        }
-        if(profile) {
-            return User.findOne({
-                email: profile.email
-            })
-            .then(function (user) {
-                deferred.resolve(user);
-            })
-            .catch(function (err) {
-                deferred.reject(err);
-            });
-        }
-    });
-
-    return deferred.promise;
+exports.getUser = function (accessToken) {
+    return googleService.getUserData(accessToken)
+        .then(function (userData) {
+            return User.findOne({email: userData.email})
+        })
+        .then(function (user) {
+            return user;
+        })
 };

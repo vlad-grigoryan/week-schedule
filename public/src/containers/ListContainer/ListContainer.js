@@ -10,7 +10,7 @@ class ListContainer extends Component {
     constructor(props) {
         super(props);
         this.state= {
-            weekSchedule : null,
+            userData : null,
             dataTime: null
         }
     };
@@ -46,6 +46,7 @@ class ListContainer extends Component {
     };
 
     getWeekSchedule = (userAccessToken) => {
+        console.log(userAccessToken, "userAccessToken")
         let header = {
             headers: {
                 'Access-Token': userAccessToken
@@ -56,7 +57,7 @@ class ListContainer extends Component {
             .then((response) => {
                 console.log(response.data, "!!!!!!!!!!!!")
                 this.setState({
-                    weekSchedule: response.data
+                    userData: response.data
                 })
             })
     }
@@ -64,8 +65,8 @@ class ListContainer extends Component {
     render() {
         return (
             <div>
-                {this.props.auth.isAuthenticated&&this.state.weekSchedule ?
-                    (<List weekSchedule={this.state.weekSchedule} headerTime={this.state.dataTime} />)
+                {this.props.auth.isAuthenticated && this.state.userData ?
+                    (<List userData={this.state.userData} headerTime={this.state.dataTime} />)
                     :(<Loading />)}
             </div>
         );

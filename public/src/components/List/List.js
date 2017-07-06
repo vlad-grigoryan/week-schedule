@@ -14,26 +14,13 @@ import {
 
 
 const List = (props) => {
-
-    const getTimeForLate = (lateArray, index) => {
-        let day = new Date();
-        day = new Date(day.setDate(day.getDate() + index));
-        while(day.getDay() == 0 || day.getDay() == 6) {
-            day = new Date(day.setDate(day.getDate() + 1));
-        }
-
-        day.setHours(10);
-        day.setMinutes(0);
-        day.setSeconds(0);
+    const getTimeForLate = (lateArray, index, day) => {
 
         for (let i = 0 ; i < lateArray.length; i++) {
             if(moment(day).format('YYYY-MM-DD') === moment(lateArray[i].startTime).format('YYYY-MM-DD')) {
                 return moment(lateArray[i].startTime).format('HH:mm')
             }
         }
-
-
-        day = new Date(day.setDate(day.getDate() + 1));
 
         return '-'
     };
@@ -47,7 +34,7 @@ const List = (props) => {
                         adjustForCheckbox={false}
                         displaySelectAll={false}>
                         <TableRow>
-                            <TableHeaderColumn className="table-row">Name</TableHeaderColumn>
+                            <TableHeaderColumn className="first-column text-center">Name</TableHeaderColumn>
                             {
                                 props.headerTime.map(function (date, index) {
                                     return (
@@ -60,14 +47,17 @@ const List = (props) => {
                     <TableBody
                         displayRowCheckbox={false}>
                         {
-                            props.weekSchedule.map(function (userSchedule, index) {
+                            props.userData.map(function (userSchedule, index) {
                                 return (
                                     <TableRow key={index}>
-                                        <TableRowColumn className="table-row">{userSchedule.firstName} {userSchedule.lastName}</TableRowColumn>
+                                        <TableRowColumn className="first-column text-left">
+                                            <img src={userSchedule.picture} className="profile-picture"/>
+                                            <span className="user-name">{userSchedule.firstName} {userSchedule.lastName}</span>
+                                            </TableRowColumn>
                                         {
                                             props.headerTime.map(function (date, index) {
                                                 return (
-                                                    <TableRowColumn className="table-row" key={index}>{getTimeForLate(userSchedule.workSchedule, index)}</TableRowColumn>
+                                                    <TableRowColumn className="table-row pts" key={index}>{getTimeForLate(userSchedule.workSchedule, index, date)}</TableRowColumn>
                                                 )
                                             })
                                         }

@@ -28,12 +28,13 @@ if(process.env.NODE_ENV !== 'production') {
     const webpack = require('webpack');
     let compiler = webpack(webpackConfig);
 
+
+
     app.use(webpackDevMiddleware(compiler, {
-        contentBase: path.join(__dirname, './dist'),
+        contentBase: path.join(__dirname, './public'),
         hot: true,
+        inline: true,
         historyApiFallback: true,
-        compress: false,
-        noInfo: false,
         filename: "bundle.js",
         publicPath: "/",
         stats: { colors: true },

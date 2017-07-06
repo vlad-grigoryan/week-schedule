@@ -1,10 +1,30 @@
 .list-container{
-  font-family: SANS-SERIF !important;
   text-align: center;
   .table-row{
     padding-left: 0px !important;
     padding-right: 0px !important;
     text-align: center !important;
   }
+  .pts {
+    padding-top: 15px;
+  }
+  .profile-picture{
+    position: relative;
+    top: 8px;
+    margin-right: 5px;
+    height: 25px;
+    border-radius: 2px;
+  }
+}
+.first-column{
+  width: 26%;
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+}
+.text-left {
+  text-align: left !important;
+}
+.text-center {
+  text-align: center !important;
 }
 

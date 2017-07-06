@@ -1,91 +1,57 @@
 var mongoose = require('mongoose');
 var Q = require('q');
+var moment = require('moment');
 
 var WorkTime = mongoose.model('WorkTime');
 var User = mongoose.model('User');
-
-
-var google = require('googleapis');
-var googleAuth = require('google-auth-library');
-var moment = require('moment');
-var auth = new googleAuth();
-
+const googleService = require('./googleApi');
 const config = require('../../../config/authConfig');
 
-var oauth2Client = new auth.OAuth2(
-    config.gapiClientId, '', ''
-);
 
-exports.setWorkingTime = function (token, startTime) {
+exports.setWorkingTime = function (accessToken, startTime) {
+    var userId;
     startTime = moment(startTime).local().seconds(0).milliseconds(0).toISOString();
 
-    var deferred = Q.defer();
-
-    oauth2Client.setCredentials({
-        access_token: token,
-    });
-
-    var userId;
-
-    google.oauth2("v2").userinfo.v2.me.get({auth: oauth2Client}, function (error, profile) {
-        User.findOne({
-            googleId: profile.id
+    return googleService.getUserData(accessToken)
+        .then(function (userData) {
+            return User.findOne({email: userData.email})
         })
-            .then(function (data) {
-                const dayStart = moment(startTime).local().startOf('day');
-                const dayEnd = moment(startTime).local().endOf('day');
+        .then(function (user) {
+            const dayStart = moment(startTime).local().startOf('day');
+            const dayEnd = moment(startTime).local().endOf('day');
 
-                userId = data._id;
+            userId = user._id;
 
-                return WorkTime.findOne({
-                    startTime: {$gte: dayStart, $lt: dayEnd},
-                    userId: userId
-                })
+            return WorkTime.findOne({
+                startTime: {$gte: dayStart, $lt: dayEnd},
+                userId: userId
             })
-            .then(function (worktime) {
-                if (!worktime) {
-                    worktime = new WorkTime({
-                        userId: userId,
-                        startTime: moment(startTime).local()
-                    });
-                } else {
-                    worktime.startTime = moment(startTime).local();
-                }
-                return worktime.save();
-            })
-    });
-    return deferred.promise;
-
+        })
+        .then(function (worktime) {
+            if (!worktime) {
+                worktime = new WorkTime({
+                    userId: userId,
+                    startTime: moment(startTime).local()
+                });
+            } else {
+                worktime.startTime = moment(startTime).local();
+            }
+            return worktime.save();
+        })
 };
 
-exports.getWorkingTime = function (token) {
-    var deferred = Q.defer();
+exports.getWorkingTime = function (accessToken) {
 
-    oauth2Client.setCredentials({
-        access_token: token,
-    });
-
-    google.oauth2("v2").userinfo.v2.me.get({auth: oauth2Client}, function (error, profile) {
-        if (error) {
-            deferred.reject(new Error(error));
-        }
-        const googleId = profile.id;
-        User.findOne({
-            googleId: profile.id
+    return googleService.getUserData(accessToken)
+        .then(function (userData) {
+            return User.findOne({ email: userData.email })
         })
-            .then(function (user) {
-                return WorkTime.find({
-                    userId: user._id
-                })
-            })
-            .then(function (worktime) {
-                deferred.resolve(worktime)
-            })
-            .catch(function (err) {
-                deferred.reject(err)
-            });
-    });
-    return deferred.promise;
+        .then(function (user) {
+            return WorkTime.find({ userId: user._id })
+        })
+        .then(function (worktime) {
+            return worktime
+        })
 };
 
 exports.getWorkSchedule = function () {
@@ -102,7 +68,6 @@ exports.getWorkSchedule = function () {
         },
         { '$match': { "workSchedule": {$not: {$size: 0}}} }
     ]).then(function (userData) {
-        console.log(userData, "userData")
         return userData.map(function (data, index) {
             for(var i = 0; i < data.workSchedule.length; i++) {
                 if(data.workSchedule[i] && data.workSchedule[i].startTime

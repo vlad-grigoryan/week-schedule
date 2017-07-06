@@ -25,6 +25,7 @@ workTimeHandler.prototype.setWorkingTime = function(req, res, next) {
     const changedTime = req.body.changedTime;
 
     workTimeService.setWorkingTime(userAccessToken, changedTime)
+        .catch(next)
 
 };
 
@@ -41,6 +42,7 @@ workTimeHandler.prototype.getWorkingTime = function(req, res, next) {
             }
             return res.status(200).send(data);
         })
+        .catch(next)
 };
 
 workTimeHandler.prototype.getWorkSchedule = function(req, res, next) {
@@ -56,6 +58,7 @@ workTimeHandler.prototype.getWorkSchedule = function(req, res, next) {
             }
             return res.status(200).send(data);
         })
+        .catch(next)
 };
 
 

@@ -8,6 +8,7 @@ var schema = new Schema({
     firstName: String,
     lastName: String,
     email:String,
+    picture: String,
     hd: String,
     created: {
         type: Date,
@@ -22,6 +23,7 @@ var schema = new Schema({
 schema.statics.publicFields = [
     'firstName',
     'lastName',
+    'picture',
     'email',
     'hd',
     'workingDays',
