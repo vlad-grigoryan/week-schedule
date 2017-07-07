@@ -46,7 +46,6 @@ class ListContainer extends Component {
     };
 
     getWeekSchedule = (userAccessToken) => {
-        console.log(userAccessToken, "userAccessToken")
         let header = {
             headers: {
                 'Access-Token': userAccessToken
@@ -55,7 +54,6 @@ class ListContainer extends Component {
 
         axios.get('/api/v1/worktime', header)
             .then((response) => {
-                console.log(response.data, "!!!!!!!!!!!!")
                 this.setState({
                     userData: response.data
                 })

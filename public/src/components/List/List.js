@@ -12,13 +12,12 @@ import {
 
 
 
-
 const List = (props) => {
     const getTimeForLate = (lateArray, index, day) => {
 
         for (let i = 0 ; i < lateArray.length; i++) {
-            if(moment(day).format('YYYY-MM-DD') === moment(lateArray[i].startTime).format('YYYY-MM-DD')) {
-                return moment(lateArray[i].startTime).format('HH:mm')
+            if(moment(day).format('YYYY-MM-DD') === moment(lateArray[i]).format('YYYY-MM-DD')) {
+                return moment(lateArray[i]).format('HH:mm')
             }
         }
 
@@ -51,13 +50,13 @@ const List = (props) => {
                                 return (
                                     <TableRow key={index}>
                                         <TableRowColumn className="first-column text-left">
-                                            <img src={userSchedule.picture} className="profile-picture"/>
-                                            <span className="user-name">{userSchedule.firstName} {userSchedule.lastName}</span>
+                                            <img src={userSchedule.userData[0].picture} className="profile-picture"/>
+                                            <span className="user-name">{userSchedule.userData[0].firstName} {userSchedule.userData[0].lastName}</span>
                                             </TableRowColumn>
                                         {
                                             props.headerTime.map(function (date, index) {
                                                 return (
-                                                    <TableRowColumn className="table-row pts" key={index}>{getTimeForLate(userSchedule.workSchedule, index, date)}</TableRowColumn>
+                                                    <TableRowColumn className="table-row pts" key={index}>{getTimeForLate(userSchedule.times, index, date)}</TableRowColumn>
                                                 )
                                             })
                                         }

@@ -56,27 +56,23 @@ exports.getWorkingTime = function (accessToken) {
 
 exports.getWorkSchedule = function () {
     var weekSchedule = [];
+    var now = new Date();
+    now.setHours(9);
+    now.setMinutes(0);
+    now.setSeconds(0);
 
-    return User.aggregate([
+    return WorkTime.aggregate([
+        { '$match': {startTime: {$gte : now}}},
+        { '$sort' : {userId: 1, startTime: 1}},
+        { '$group': {_id: "$userId", times: {$push: "$startTime"}}},
         {
             '$lookup': {
-                from: "worktimes",
+                from: "users",
                 localField: "_id",
-                foreignField: "userId",
-                as: "workSchedule"
+                foreignField: "_id",
+                as: "userData"
             }
-        },
-        { '$match': { "workSchedule": {$not: {$size: 0}}} }
-    ]).then(function (userData) {
-        return userData.map(function (data, index) {
-            for(var i = 0; i < data.workSchedule.length; i++) {
-                if(data.workSchedule[i] && data.workSchedule[i].startTime
-                    && moment(new Date()).local().startOf('day').isAfter(moment(data.workSchedule[i].startTime).local())){
-                    data.workSchedule.splice(i, 1);
-                }
-            }
+        }
 
-            return data;
-        })
-    })
+    ])
 };

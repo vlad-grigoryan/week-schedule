@@ -2,6 +2,7 @@ import React from 'react';
 import './styles.scss';
 import TimePicker from 'material-ui/TimePicker';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import { Link } from 'react-router-dom';
 
 
 const muiTheme = getMuiTheme({
@@ -11,10 +12,11 @@ const muiTheme = getMuiTheme({
 });
 
 const Dashboard = (props) => {
+    console.log(props, "props")
     return (
         <div className="dashboard_container">
             <h1>Hi {props.name},</h1>
-            <h2>Welcome to your Dashboard</h2>
+            <h3>click to time for change</h3>
             <div className="outer">
             {
                 props.workingTime.map((time, id) => {
@@ -36,6 +38,9 @@ const Dashboard = (props) => {
                 })
             }
             </div>
+            <Link to="/list">
+                See All List
+            </Link>
         </div>
     );
 };

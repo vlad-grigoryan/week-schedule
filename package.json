@@ -8,7 +8,7 @@
     "dev": "npm run build && nodemon --inspect ./bin/www --ignore './public'",
     "start": "node ./bin/www",
     "publish": "npm run prod && git add . && git commit -m \"deploy\" && git push heroku master && rm ./public/bundle.js",
-    "prod": "npm run build && NODE_ENV=production",
+    "prod": "npm run build && node ./bin/www",
     "test": "mocha --compilers js:babel-core/register ./test/**/*.spec.js --require ignore-styles"
   },
   "author": "",
