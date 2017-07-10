@@ -1,6 +1,6 @@
 import  React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import axios from 'axios';
 
 import {SetSigninStatusAction} from '../../actions';
@@ -13,12 +13,13 @@ export function requireAuthentication(Component) {
             super(props);
 
         }
+
         getAuthStatus = (isAuth) => {
-          return   {
-              auth : {
-                  isAuthenticated: isAuth,
-              }
-          }
+            return {
+                auth: {
+                    isAuthenticated: isAuth,
+                }
+            }
         };
 
         loadGoogleApi = () => {
@@ -27,26 +28,26 @@ export function requireAuthentication(Component) {
 
             script.onload = () => {
 
-                    gapi.load('auth2', () => {
-                        return  gapi.auth2.init({
-                            client_id: config.gapiClientId,
-                            scope: 'profile'
-                        }).then((GoogleAuth)=>{
-                            let userAccessToken = GoogleAuth.currentUser.get().getAuthResponse().access_token;
+                gapi.load('auth2', () => {
+                    return gapi.auth2.init({
+                        client_id: config.gapiClientId,
+                        scope: 'profile'
+                    }).then((GoogleAuth) => {
+                        let userAccessToken = GoogleAuth.currentUser.get().getAuthResponse().access_token;
 
-                            if(userAccessToken) {
-                                let params = {
-                                    token: userAccessToken
-                                };
-                                axios.post('/api/v1/isAuth', params)
-                                    .then((response)=> {
-                                        this.props.SetSigninStatusAction(response.data.isAuthenticated);
-                                    })
-                            } else {
-                                this.props.SetSigninStatusAction(false);
-                            }
+                        if (userAccessToken) {
+                            let params = {
+                                token: userAccessToken
+                            };
+                            axios.post('/api/v1/isAuth', params)
+                                .then((response) => {
+                                    this.props.SetSigninStatusAction(response.data.isAuthenticated);
+                                })
+                        } else {
+                            this.props.SetSigninStatusAction(false);
+                        }
 
-                        })
+                    })
 
                 });
 
@@ -61,7 +62,7 @@ export function requireAuthentication(Component) {
         }
 
         render() {
-            return(
+            return (
                 <div>
                     <Component {...this.props}/>
                 </div>
@@ -72,7 +73,7 @@ export function requireAuthentication(Component) {
 
     const mapStateToProps = (state) => {
         return {
-            auth : {
+            auth: {
                 isAuthenticated: state.users.isAuthenticated,
             }
         }

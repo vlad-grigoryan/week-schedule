@@ -1,11 +1,12 @@
 import React from 'react';
-import { Component } from 'react';
-import { withRouter } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { SetSigninStatusAction } from '../../actions';
+import {Component} from 'react';
+import {withRouter} from 'react-router-dom';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {SetSigninStatusAction} from '../../actions';
 import {Login, Loading} from '../../components';
 import axios from 'axios';
+import {fetchAuth} from "../../reducers/users";
 
 
 class LoginContainer extends Component {
@@ -19,19 +20,23 @@ class LoginContainer extends Component {
     };
 
     componentWillReceiveProps(nextProps) {
-        if(!this.props.auth.isAuthenticated && !nextProps.auth.isAuthenticated) {
+        if (!this.props.auth.isAuthenticated && !nextProps.auth.isAuthenticated) {
             this.setState({
                 isLoggedIn: true
             });
         }
 
-        if(nextProps.auth.isAuthenticated){
+        if (nextProps.auth.isAuthenticated) {
             this.props.history.push('/dashboard')
         }
     }
 
+    componentDidMount() {
+        this.props.fetchAuth();
+    }
+
     responseGoogle = (response) => {
-        if(response.error) {
+        if (response.error) {
             this.setState({
                 errorMessage: response.error
             });
@@ -42,10 +47,10 @@ class LoginContainer extends Component {
         };
 
         axios.post('/api/v1/user', params)
-            .then((response)=> {
+            .then((response) => {
                 this.props.history.push('/dashboard');
             })
-            .catch((error) =>{
+            .catch((error) => {
                 if (error.response) {
                     gapi.auth2.getAuthInstance().disconnect();
                     this.setState({
@@ -55,29 +60,30 @@ class LoginContainer extends Component {
             });
 
     };
+
     render() {
+        const {appReady, isAuthenticated} = this.props;
+
         return (
             <div>
-                {this.state.isLoggedIn ?
+                {appReady ?
                     (<Login onGoogleResponse={this.responseGoogle} errorMessage={this.state.errorMessage}/>)
-                    :(<Loading />)}
+                    : (<Loading />)}
             </div>
         );
     }
 }
 const mapStateToProps = (state) => {
     return {
-        auth : {
-            isAuthenticated: state.users.isAuthenticated,
-        }
+        // appReady: state.appReady,
+        isAuthenticated: state.isAuthenticated
     }
 };
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        SetSigninStatusAction: bindActionCreators(SetSigninStatusAction, dispatch)
-    }
-};
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+    fetchAuth,
+}, dispatch);
 
 LoginContainer = connect(mapStateToProps, mapDispatchToProps)(LoginContainer);
 

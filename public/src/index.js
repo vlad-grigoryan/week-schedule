@@ -1,10 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { createStore, applyMiddleware } from 'redux';
+import {Provider} from 'react-redux';
+import {BrowserRouter as Router} from 'react-router-dom';
+import {createStore, applyMiddleware} from 'redux';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
+const script = document.createElement("script");
+script.src = "https://apis.google.com/js/api.js";
 
 
 import Routes from './routes';
@@ -13,6 +16,7 @@ import './main.scss'
 
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
+import {appReady} from "./reducers/users";
 injectTapEventPlugin();
 
 const logger = store => next => action => {
@@ -27,6 +31,13 @@ const store = createStore(
     // applyMiddleware(logger)
 );
 
+
+//application bootsraping!
+script.onload = () => {
+    store.dispatch(appReady())
+};
+
+document.body.appendChild(script);
 
 
 ReactDOM.render(
