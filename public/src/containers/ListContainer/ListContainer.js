@@ -1,90 +1,67 @@
 import React from 'react';
 import { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Redirect } from 'react-router';
 import { connect } from 'react-redux';
-import axios from 'axios';
+import {bindActionCreators} from 'redux';
 import {List, Loading} from '../../components';
+import {fetchUsers} from "../../reducers/users";
+import {fetchAuth} from "../../reducers/auth";
+import {setDateTime} from "../../reducers/list";
+import {authSelector, userSelector, listSelector} from "../../selectors";
 
 
 class ListContainer extends Component {
     constructor(props) {
         super(props);
-        this.state= {
-            userData : null,
-            dataTime: null
-        }
     };
 
     componentWillReceiveProps(nextProps) {
-        let userAccessToken = gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token;
 
-        if(!nextProps.auth.isAuthenticated){
-            this.props.history.push('/')
-        }
-        this.getWeekSchedule(userAccessToken);
-        this.setDateTime();
     };
 
-    setDateTime = () => {
-
-        let lateTimes= [];
-        let now = new Date();
-        now.setHours(10);
-        now.setMinutes(0);
-        now.setSeconds(0);
-
-        while( lateTimes.length != 5) {
-            if(now.getDay() !== 6 && now.getDay() !== 0) {
-                lateTimes.push(new Date(now));
-            }
-            now = new Date(now.setDate(now.getDate() + 1));
-        }
-
-        this.setState({
-            dataTime: lateTimes
-        })
-    };
-
-    getWeekSchedule = (userAccessToken) => {
-        let header = {
-            headers: {
-                'Access-Token': userAccessToken
-            }
-        };
-
-        axios.get('/api/v1/worktime', header)
-            .then((response) => {
-                this.setState({
-                    userData: response.data
-                })
-            })
+    componentWillMount() {
+        this.props.fetchAuth();
+        this.props.fetchUsers();
+        this.props.setDateTime();
     }
 
+
     render() {
+        const { isLoaded, isStarted, isAuthenticated, allUsers, headerDateTimes} = this.props;
         return (
             <div>
-                {this.props.auth.isAuthenticated && this.state.userData ?
-                    (<List userData={this.state.userData} headerTime={this.state.dataTime} />)
-                    :(<Loading />)}
+                {
+                    isStarted
+                        ? (<Loading />)
+                        : (isLoaded
+                        ? (!isAuthenticated
+                            ? (<Redirect to="/" />)
+                            : ( allUsers && headerDateTimes &&
+                                <List
+                                    userData={allUsers.data}
+                                    headerTime={headerDateTimes}
+                                />))
+                        : (<div/>))
+                }
             </div>
         );
     }
 }
 const mapStateToProps = (state) => {
     return {
-        auth : {
-            isAuthenticated: state.users.isAuthenticated,
-        }
+        ...authSelector(state),
+        ...userSelector(state),
+        ...listSelector(state)
     }
 };
 
-const mapDispatchToProps = (dispatch) => {
-    return {
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+    fetchAuth,
+    fetchUsers,
+    setDateTime
+}, dispatch);
 
-    }
-};
-
-ListContainer = connect(mapStateToProps, null)(ListContainer);
+ListContainer = connect(mapStateToProps, mapDispatchToProps)(ListContainer);
 
 
 export default withRouter(ListContainer);

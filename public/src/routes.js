@@ -1,32 +1,21 @@
 import React from 'react';
-import {HashRouter, Route, Link, Switch} from 'react-router-dom';
+import { Route, Link, Switch} from 'react-router-dom';
 
 import {Login, Dashboard, List} from './pages';
-import {requireAuthentication} from './containers';
-
-
-const MainWrapper = (props) => {
-    if (props.appReady) {
-        return props.children
-    }
-
-    return (
-        <div>loading....</div>
-    )
-};
-
-//props appReady prps!!
+import {requireAuthentication, MainWrapper, LoginContainer} from './containers';
 
 
 export default (
-    <Switch>
-        <MainWrapper>
-            <Route path="/" exact={true} component={Login}/>
-            <Route path="/dashboard" component={requireAuthentication(Dashboard)}/>
-            <Route path="/list" component={requireAuthentication(List)}/>
-            <Route render={() => <h1>404 Page</h1>}/>
-        </MainWrapper>
-    </Switch>
+
+        <Switch>
+            <MainWrapper>
+                <Route path="/" exact={true} component={Login}/>
+                <Route path="/dashboard" component={Dashboard}/>
+                <Route path="/list" component={List}/>
+            </MainWrapper>
+                <Route render={() => <h1>404 Page</h1>}/>
+        </Switch>
+
 );
 
 

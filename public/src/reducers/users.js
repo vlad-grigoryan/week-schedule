@@ -1,144 +1,79 @@
-import {SET_SIGNIN_STATUS} from '../actionType';
-import Q from "Q";
+import axios from 'axios';
 
-const INIT_STATE = {
-    auth: {
-        isAuthenticated: false
-    }
+import {getAccessToken} from './reducerHelper';
 
-};
+import {
+    FETCH_USER_DATA,
+    FETCH_ALL_USERS,
+    FETCH_USER_DATA_FAIL,
+    FETCH_ALL_USERS_FAIL
 
+} from "../actionType";
 
-const usersReducer1 = (state = {isAuthenticated: INIT_STATE.auth.isAuthenticated}, action) => {
-    switch (action.type) {
-        case SET_SIGNIN_STATUS: {
-            return {...state, isAuthenticated: action.payload}
-        }
-        default:
-            return state
-    }
-};
-
-export default usersReducer;
-
-
-const FETCH_AUTHENTICATION_START = 'FETCH_AUTHENTICATION_START';
-const FETCH_AUTHENTICATION_FAIL = 'FETCH_AUTHENTICATION_FAIL';
-const FETCH_AUTHENTICATION_SUCCESS = 'FETCH_AUTHENTICATION_SUCCESS';
-
-const APP_READY = "APP_READY";
-
-
-const fetchAuthStart = () => ({type: FETCH_AUTHENTICATION_START});
-const fetchAuthFail = (error) => ({type: FETCH_AUTHENTICATION_FAIL, payload: error});
-const fetchAuthSuccess = (data) => ({type: FETCH_AUTHENTICATION_SUCCESS, payload: data});
-
-
-gapi.load('auth2', () => {
-    const request = gapi.auth2.init({
-        client_id: config.gapiClientId,
-        scope: 'profile'
-    });
-
-
-    request.then((GoogleAuth) => {
-        let userAccessToken = GoogleAuth.currentUser.get().getAuthResponse().access_token;
-        if (userAccessToken) {
-            let params = {
-                token: userAccessToken
-            };
-            axios.post('/api/v1/isAuth', params)
-                .then((response) => {
-                    this.props.SetSigninStatusAction(response.data.isAuthenticated);
-                })
-        } else {
-            this.props.SetSigninStatusAction(false);
-        }
-
-    });
-
-    return request;
-
-});
-
-const getAuth2 = () => {
-    let deffered = Q.defer();
-    gapi.auth2.init({
-        client_id: config.gapiClientId,
-        scope: 'profile'
-    }).then((data) => {
-        deffered.resolve(data)
-    }).catch((err) => {
-        deffered.reject(err)
-    })
-
-    return deffered.promise;
-
-}
-
-
-export const fetchAuth = () => {
-
-    const request = getAuth2();
-
-    return (dispatch) => {
-        dispatch(fetchAuthStart());
-
-        request.then((data) => {
-            //...
-            fetchAuthSuccess(data);
-        }).catch((err) => {
-            fetchAuthFail(err)
-        })
-
-    }
-};
+import {
+    fetchUserData,
+    fetchUserFail,
+    fetchAllUsers,
+    fetchAllUsersFail
+} from "../actions";
 
 
 const initialState = {
-    fetchingState: {
-        isStarted: false,
-        isLoaded: false,
-        isFailed: false,
+    user: {
+        userData: null,
+        isFetchFailed: false,
         error: null
     },
-    isAuthenticated: false
+    allUsers: {
+        data: null,
+        isFetchFailed: false,
+        error: null
+    }
 };
 
 
 const usersReducer = (state = initialState, action) => {
     switch (action.type) {
-        case  FETCH_AUTHENTICATION_START :
+        case FETCH_USER_DATA:
             return {
                 ...state,
-                fetchingState: {
-                    ...state.fetchingState,
-                    isStarted: true,
-
+                user: {
+                    ...state.user,
+                    userData: action.payload
                 }
             };
-        case FETCH_AUTHENTICATION_FAIL:
+            break;
+        case FETCH_ALL_USERS:
             return {
                 ...state,
-                fetchingState: {
-                    ...state.fetchingState,
-                    isStarted: false,
-                    isFailed: true,
+                allUsers: {
+                    ...state.allUsers,
+                    data: action.payload,
+                    isFetchFailed: false,
+                    error: null
+                }
+            };
+            break;
+        case FETCH_USER_DATA_FAIL:
+            return {
+                ...state,
+                user: {
+                    ...state.user,
+                    userData: null,
+                    isFetchFailed: true,
                     error: action.payload
-
                 }
             };
-        case FETCH_AUTHENTICATION_SUCCESS :
+            break;
+        case FETCH_ALL_USERS_FAIL:
             return {
                 ...state,
-                fetchingState: {
-                    ...state.fetchingState,
-                    isStarted: false,
-                    isFailed: false,
-                    error: null,
-                    isLoaded: true
-                },
-                isAuthenticated: action.payload
+                allUsers: {
+                    ...state.allUsers,
+                    data: null,
+                    isFetchFailed: true,
+                    error: action.payload,
+                }
             };
 
         default :
@@ -146,14 +81,57 @@ const usersReducer = (state = initialState, action) => {
     }
 };
 
-export const appReady = () => ({type: APP_READY});
+export const fetchUser = () => {
+    const request = getAccessToken();
 
 
-const appReadyReducer = (state = false, action) => {
-    switch (action.type) {
-        case APP_READY :
-            return true;
-        default:
-            return state;
+    return (dispatch) => {
+
+        request.then((userAccessToken) => {
+            let header = {
+                headers: {
+                    'Access-Token': userAccessToken
+                }
+            };
+            axios.get('/api/v1/user', header)
+                .then((userData)=> {
+                    dispatch(fetchUserData(userData.data))
+                })
+                .catch((err) => {
+                if(err && err.response) {
+                    dispatch(fetchUserFail(err.response))
+                }
+
+                });
+        })
     }
 };
+
+
+export const fetchUsers = () => {
+    const request = getAccessToken();
+
+
+    return (dispatch) => {
+
+        request.then((userAccessToken) => {
+            let header = {
+                headers: {
+                    'Access-Token': userAccessToken
+                }
+            };
+            axios.get('/api/v1/worktime', header)
+                .then((response) => {
+                    dispatch(fetchAllUsers(response.data))
+                })
+                .catch((err) => {
+                    if(err && err.response) {
+                        console.log(err.response, "err.response")
+                        dispatch(fetchAllUsersFail(err.response))
+                    }
+                });
+        })
+    }
+};
+
+export default usersReducer;

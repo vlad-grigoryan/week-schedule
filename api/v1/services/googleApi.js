@@ -21,22 +21,23 @@ exports.getUserData = function (token) {
 
     google.oauth2("v2").userinfo.v2.me.get({auth: oauth2Client}, function (error, profile) {
         if(error && !profile) {
-            deferred.reject(new Error(error));
+            deferred.reject({status: error.code, message: error.errors[0].message});
+        } else {
+            User.findOne({email: profile.email}).lean()
+                .then(function (user) {
+                    if(user) {
+                        user.googleId = profile.id;
+                        user.firstName = profile.given_name;
+                        user.lastName = profile.family_name;
+                        user.email = profile.email;
+                        user.picture = profile.picture;
+                        user.hd = profile.hd;
+                        user.save();
+                        deferred.resolve(user);
+                    }
+                });
         }
 
-        User.findOne({email: profile.email}).lean()
-            .then(function (user) {
-                if(user) {
-                    user.googleId = profile.id;
-                    user.firstName = profile.given_name;
-                    user.lastName = profile.family_name;
-                    user.email = profile.email;
-                    user.picture = profile.picture;
-                    user.hd = profile.hd;
-                    user.save();
-                    deferred.resolve(user);
-                }
-            });
         deferred.resolve(profile);
     });
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { Component } from 'react';
 import './styles.scss';
 
+//TODO: Finish this component
 export default class ErrorDisplay extends Component {
     constructor(props) {
         super(props);

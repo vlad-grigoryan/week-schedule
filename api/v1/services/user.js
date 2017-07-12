@@ -14,6 +14,7 @@ exports.checkUserAuth = function (accessToken) {
 
     return googleService.getUserData(accessToken)
         .then(function (userData) {
+
             if(userData && userData.hd !== config.requireMail) {
                return false;
             }
@@ -49,8 +50,9 @@ exports.createUser = function (accessToken) {
                     picture: userData.picture,
                     hd: userData.hd,
                 });
-                return user.save();
+                user.save();
             }
+            return user;
         })
 };
 

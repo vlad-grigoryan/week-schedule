@@ -40,6 +40,7 @@
     "pug": "^2.0.0-rc.2",
     "q": "^1.5.0",
     "react": "^15.5.4",
+    "react-addons-update": "^15.6.0",
     "react-async-loader": "^0.1.2",
     "react-dom": "^15.5.4",
     "react-google-login": "^2.9.2",
@@ -50,6 +51,8 @@
     "redux": "^3.6.0",
     "redux-actions": "^2.0.3",
     "redux-promise": "^0.5.3",
+    "redux-thunk": "^2.2.0",
+    "reselect": "^3.0.1",
     "sass-loader": "^6.0.3",
     "style-loader": "^0.16.1",
     "webpack": "^2.6.1"
